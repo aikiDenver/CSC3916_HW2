@@ -42,6 +42,7 @@ function getJSONObjectForMovieRequirement(req) {
 }
 
 router.post('/signup', function(req, res) {
+    //Listening to the path '/signup'
     if (!req.body.username || !req.body.password) {
         res.json({success: false, msg: 'Please include both username and password to signup.'})
     } else {
@@ -92,6 +93,42 @@ router.route('/testcollection')
         var o = getJSONObjectForMovieRequirement(req);
         res.json(o);
     }
+    );
+
+//hw2
+
+router.route('/movies')
+    .get(function(req, res){
+        //if the user isAuthenticated
+        res.json({status: 200, msg: 'GET movies', headers: req.headers, query: req.query, env: process.env.UNIQUE_KEY});
+    }
+    )
+    .post(function (req, res){
+            res.json({status: 200, msg: "movie saved", headers: req.headers, query: req.query, env: process.env.UNIQUE_KEY});
+        }
+    )
+
+    .put(authJwtController.isAuthenticated, function(req, res){
+        console.log(req.body);
+        res = res.status(200).send({success: true, msg: "movie updated", headers: req.headers, query: req.query, env: process.env.UNIQUE_KEY});
+        if (req.get('Content-Type')) {
+            res = res.type(req.get('Content-Type'));
+        }
+        var o = getJSONObjectForMovieRequirement(req);
+        res.json(o);
+
+        }
+    )
+    .delete(authController.isAuthenticated, function(req, res) {
+            console.log(req.body);
+            res = res.status(200);
+            if (req.get('Content-Type')) {
+                res = res.type(req.get('Content-Type'));
+            }
+            var o = getJSONObjectForMovieRequirement(req);
+            res.json(o);
+        }
+
     );
 
 app.use('/', router);
